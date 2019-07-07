@@ -39,7 +39,7 @@
 
 [【Redis 】5种基本数据类型](https://app.yinxiang.com/fx/9bd4ed2e-9caa-44a3-8513-04c2d06977e6)
 
-
+[【Redis 】数据持久化](https://app.yinxiang.com/fx/34aa5e9a-4c08-415b-ab73-5a484a1941c1)
 
 #### 分布式
 
