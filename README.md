@@ -3,7 +3,7 @@
 
 #### java高级
 
-[反射](https://github.com/Glenn-wang/advance/blob/master/README.md)
+[反射](https://app.yinxiang.com/fx/a5879550-baea-4443-abe9-ea6932637f7e)
 
 [注解](https://github.com/Glenn-wang/advance/blob/master/README.md)
 
