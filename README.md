@@ -41,6 +41,8 @@
 
 [【Redis 】数据持久化](https://app.yinxiang.com/fx/34aa5e9a-4c08-415b-ab73-5a484a1941c1)
 
+[【Redis 】主从复制](https://app.yinxiang.com/fx/b7a6be20-2ef6-476e-a050-ff7b1cb6d36f)
+
 #### 分布式
 
 
