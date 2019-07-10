@@ -39,17 +39,17 @@
 
 #####  Redis
 
-​	[【Redis 】5种基本数据类型](https://app.yinxiang.com/fx/9bd4ed2e-9caa-44a3-8513-04c2d06977e6)
+​	[【Redis 】5种基本数据类型笔记](https://app.yinxiang.com/fx/9bd4ed2e-9caa-44a3-8513-04c2d06977e6)
 
-​	[【Redis 】数据持久化](https://app.yinxiang.com/fx/34aa5e9a-4c08-415b-ab73-5a484a1941c1)
+​	[【Redis 】数据持久化笔记](https://app.yinxiang.com/fx/34aa5e9a-4c08-415b-ab73-5a484a1941c1)
 
-​	[【Redis 】主从复制](https://app.yinxiang.com/fx/b7a6be20-2ef6-476e-a050-ff7b1cb6d36f)
+​	[【Redis 】主从复制笔记](https://app.yinxiang.com/fx/b7a6be20-2ef6-476e-a050-ff7b1cb6d36f)
 
 ##### mysql
 
-​	[【mysql 】(上)](https://app.yinxiang.com/fx/cab4bbc3-7d8f-4ce9-b9c7-676b4dcc3c81)
+​	[【mysql 】索引和Explain笔记](https://app.yinxiang.com/fx/cab4bbc3-7d8f-4ce9-b9c7-676b4dcc3c81)
 
-​	[【mysql 】(下)]()	
+​	[【mysql 】索引优化笔记]()	
 
 #### 分布式
 
