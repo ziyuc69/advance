@@ -37,7 +37,13 @@
 
 #### 数据库
 
-#####  Redis
+##### mysql
+
+​	[【mysql 】索引和Explain笔记](https://app.yinxiang.com/fx/cab4bbc3-7d8f-4ce9-b9c7-676b4dcc3c81)
+
+​	[【mysql 】索引优化笔记]()	
+
+##### Redis
 
 ​	[【Redis 】5种基本数据类型笔记](https://app.yinxiang.com/fx/9bd4ed2e-9caa-44a3-8513-04c2d06977e6)
 
@@ -45,13 +51,9 @@
 
 ​	[【Redis 】主从复制笔记](https://app.yinxiang.com/fx/b7a6be20-2ef6-476e-a050-ff7b1cb6d36f)
 
-##### mysql
+#### 设计模式
 
-​	[【mysql 】索引和Explain笔记](https://app.yinxiang.com/fx/cab4bbc3-7d8f-4ce9-b9c7-676b4dcc3c81)
-
-​	[【mysql 】索引优化笔记]()	
-
-#### 分布式
+[【Redis 】七大原则笔记](https://app.yinxiang.com/fx/cf6376b4-0fd6-48a1-949a-273ea5645513)
 
 
 
