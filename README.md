@@ -41,7 +41,7 @@
 
 ​	[【mysql 】索引和Explain笔记](https://app.yinxiang.com/fx/cab4bbc3-7d8f-4ce9-b9c7-676b4dcc3c81)
 
-​	[【mysql 】索引优化笔记]()	
+​	[【mysql 】索引优化笔记](https://app.yinxiang.com/fx/1127d0fe-8f24-4c2c-9947-9fdd18c9dc1e)	
 
 ##### Redis
 
