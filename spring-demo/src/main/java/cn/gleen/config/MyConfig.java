@@ -2,7 +2,7 @@ package cn.gleen.config;
 
 /**
  * @author: wangxg
- * @date: 2019-07-16 16:10
+ * @date: 2019-08-19 16:31
  **/
 public class MyConfig {
 }
