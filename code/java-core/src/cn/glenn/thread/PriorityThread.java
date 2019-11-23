@@ -1,6 +1,4 @@
-package cn.glenn.juc;
-
-import java.util.stream.IntStream;
+package cn.glenn.thread;
 
 /**
  * @author: wangxg

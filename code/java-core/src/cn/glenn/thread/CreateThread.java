@@ -1,4 +1,4 @@
-package cn.glenn.juc;
+package cn.glenn.thread;
 
 import java.util.Arrays;
 
