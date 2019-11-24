@@ -31,8 +31,6 @@ public class Subject {
     }
 
     public void notifyAllObserver() {
-        observers.stream().forEach(o -> {
-            o.update();
-        });
+        observers.forEach(Observer::update);
     }
 }
