@@ -15,22 +15,19 @@ public class ThreadLifeCycleObserver implements LifeCycleListener {
             return;
         }
 
-        ids.stream().forEach(id -> {
-            new Thread(new ObserverRunnable(this) {
-                @Override
-                public void run() {
-                    try {
-                        notifyChange(new RunnableEvent(RunnableState.RUNNING, Thread.currentThread(), null));
-                        System.out.println("query for the id " + id);
-                        Thread.sleep(1000);
-                        int i = 1 / 0;
-                        notifyChange(new RunnableEvent(RunnableState.DONE, Thread.currentThread(), null));
-                    } catch (Exception e) {
-                        notifyChange(new RunnableEvent(RunnableState.ERROR, Thread.currentThread(), e));
-                    }
+        ids.forEach(id -> new Thread(new ObserverRunnable(this) {
+            @Override
+            public void run() {
+                try {
+                    notifyChange(new RunnableEvent(RunnableState.RUNNING, Thread.currentThread(), null));
+                    System.out.println("query for the id " + id);
+                    Thread.sleep(1000);
+                    notifyChange(new RunnableEvent(RunnableState.DONE, Thread.currentThread(), null));
+                } catch (Exception e) {
+                    notifyChange(new RunnableEvent(RunnableState.ERROR, Thread.currentThread(), e));
                 }
-            }, id).start();
-        });
+            }
+        }, id).start());
     }
 
     @Override
