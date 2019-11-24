@@ -5,6 +5,7 @@ package cn.glenn.concurrent.singletonpatterns;
  * @date: 2019-11-24 12:17
  *
  * 使用静态内部类，借用类加载机制，实现单利模式
+ * 推荐使用：完美解决了多线程问题，性能问题，实现单利模式
  **/
 public class SingletonObject6 {
     private SingletonObject6() {
