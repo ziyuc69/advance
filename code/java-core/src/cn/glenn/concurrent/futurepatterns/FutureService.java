@@ -17,7 +17,7 @@ public class FutureService {
         return asyncFuture;
     }
 
-    public <T> Future<T> submit(final FutureTask<T> task, Consumer<T> consumer) {
+    public <T> Future<T> submit(final FutureTask<T> task, final Consumer<T> consumer) {
         AsyncFuture<T> asyncFuture = new AsyncFuture();
         new Thread(() -> {
             T result = task.call();
