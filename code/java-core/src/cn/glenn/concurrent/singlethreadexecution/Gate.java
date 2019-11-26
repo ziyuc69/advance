@@ -26,7 +26,7 @@ public class Gate {
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return "No." + counter + ":" + name + "," + address;
     }
 }
