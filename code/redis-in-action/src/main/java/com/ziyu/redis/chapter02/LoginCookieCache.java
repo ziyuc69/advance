@@ -4,7 +4,10 @@ import com.ziyu.redis.util.RedisUtils;
 import org.apache.commons.lang.StringUtils;
 import redis.clients.jedis.Jedis;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author ziyu
@@ -13,18 +16,50 @@ public class LoginCookieCache {
 
     private static final Jedis jedis = RedisUtils.getJedis();
 
-    public static void main(String[] args) {
-        Random random = new Random();
-        int goodSeq = random.nextInt(29) + 1;
+    public static void main(String[] args) throws Exception {
+        jedis.select(1);
 
+        new LoginCookieCache().run();
+    }
+
+    public void run() throws Exception {
+        testLoginCookies();
+    }
+
+    public void testLoginCookies() throws Exception {
+        System.out.println("\n------ testLoginCookies ------");
         String token = UUID.randomUUID().toString();
 
-        String user = checkToken(token);
-        if (StringUtils.isEmpty(user)) {
-            updateToken(token, "tom", "goods" + goodSeq);
+        updateToken(token, "username", "itemX");
+        System.out.println("we just logged-in/updated token: " + token);
+        System.out.println("for user: 'username'");
+        System.out.println();
+
+        System.out.println("what username do we get when we look-up that token?");
+        String r = checkToken(token);
+        System.out.println(r);
+        System.out.println();
+        assert r != null;
+
+        System.out.println("let's drop the maximum number of coolie to 0 to clean them out");
+        System.out.println("we will start a thread to do the cleaning, while we stop is later");
+
+        CleanSessionThread thread = new CleanSessionThread(jedis, 0);
+        thread.start();
+        Thread.sleep(1000);
+        thread.quit();
+        Thread.sleep(2000);
+        if (thread.isAlive()) {
+            throw new RuntimeException("The clean sessions thread is still alive?!?");
         }
 
-        cleanSessions();
+        long s = jedis.hlen("login:");
+        System.out.println("the current number of sessions still available is: " + s);
+        assert s == 0;
+    }
+
+    public void testShoppingCartCookies() {
+
     }
 
     /**
@@ -32,14 +67,14 @@ public class LoginCookieCache {
      * @param token 令牌
      * @return
      */
-    private static String checkToken(String token) {
+    public String checkToken(String token) {
         return jedis.hget("login:", token);
     }
 
     /**
      * 更新令牌
      */
-    private static void updateToken(String token, String user, String item) {
+    public void updateToken(String token, String user, String item) {
         long timestamp = System.currentTimeMillis();
         // 维持令牌和用户的映射关系
         jedis.hset("login:", token, user);
@@ -55,7 +90,7 @@ public class LoginCookieCache {
     /**
      * 添加购物车
      */
-    private static void addToCart(String session, String item, long count) {
+    public void addToCart(String session, String item, long count) {
         if (count <= 0) {
             // 移除指定的商品
             jedis.hdel("cart:" + session, item);
@@ -65,46 +100,53 @@ public class LoginCookieCache {
         }
     }
 
-    /**
-     * 后台扫描清理session和购物车
-     */
-    private static void cleanSessions() {
-        Boolean quit = false;
-        long LIMIT = 10000000;
-        while (!quit) {
-            // 找出目前已有令牌的数量
-            long size = jedis.zcard("recent:");
-            if (size <= LIMIT) {
-                try {
-                    Thread.sleep(1000);
+    static class CleanSessionThread extends Thread {
+
+        private Jedis jedis;
+        private int limit;
+        private boolean quit;
+
+        public CleanSessionThread(Jedis jedis, int limit) {
+            this.jedis = jedis;
+            this.limit = limit;
+            this.quit = false;
+        }
+
+        public void quit() {
+            this.quit = true;
+        }
+
+        @Override
+        public void run() {
+            while (!quit) {
+                // 找出目前已有令牌的数量
+                long size = jedis.zcard("recent:");
+                if (size <= limit) {
+                    try {
+                        sleep(1000);
+                    }catch(InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                    }
                     continue;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
+
+                // 获取要删除的token
+                // (size - LIMIT和100比较，意思是如果token比LIMIT超出了100个，
+                // 一次只清理100个token，应该是防止一次清理过多占用cpu资源)
+                long endIndex = Math.min(size - limit, 100);
+                Set<String> tokenSet = jedis.zrange("recent:", 0, endIndex - 1);
+                String[] tokens = tokenSet.toArray(new String[tokenSet.size()]);
+
+                // 转换keys
+                List<String> sessionKeys = new ArrayList<>();
+                for (String token : tokens) {
+                    sessionKeys.add("viewed:" + token);
+                }
+
+                jedis.del(sessionKeys.toArray(new String[sessionKeys.size()]));
+                jedis.hdel("login:", tokens);
+                jedis.zrem("recent:", tokens);
             }
-
-            // 获取要删除的token
-            // (size - LIMIT和100比较，意思是如果token比LIMIT超出了100个，
-            // 一次只清理100个token，应该是防止一次清理过多占用cpu资源)
-            long endIndex = Math.min(size - LIMIT, 100);
-            Set<String> tokens = jedis.zrange("recent:", 0, endIndex - 1);
-
-            // 转换keys
-            String[] viewedKeys = new String[tokens.size()];
-            String[] sessionKeys = new String[tokens.size()];
-            String[] cartKeys = new String[tokens.size()];
-
-            List<String> tokenList = new ArrayList<>(tokens);
-            for (int i = 0; i < tokenList.size(); i++) {
-                cartKeys[i] = "cart:" + tokenList.get(i);
-                viewedKeys[i] = "viewed:" + tokenList.get(i);
-                sessionKeys[i] = tokenList.get(i);
-            }
-
-            // 移除旧的令牌
-            jedis.del(viewedKeys);
-            jedis.hdel("login:", sessionKeys);
-            jedis.zrem("recent:", sessionKeys);
         }
     }
 }
