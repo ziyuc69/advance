@@ -4,10 +4,7 @@ import com.ziyu.redis.util.RedisUtils;
 import org.apache.commons.lang.StringUtils;
 import redis.clients.jedis.Jedis;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author ziyu
@@ -24,6 +21,7 @@ public class LoginCookieCache {
 
     public void run() throws Exception {
         testLoginCookies();
+        testShoppingCartCookies();
     }
 
     public void testLoginCookies() throws Exception {
@@ -58,8 +56,39 @@ public class LoginCookieCache {
         assert s == 0;
     }
 
-    public void testShoppingCartCookies() {
+    public void testShoppingCartCookies() throws Exception {
+        System.out.println("\n------ testShoppingCartCookies ------");
+        String token = UUID.randomUUID().toString();
 
+        System.out.println("we'll refresh our session......");
+        updateToken(token, "username", "itemX");
+        System.out.println("and add an item to the shopping cart");
+        addToCart(token, "itemY", 3);
+
+        Map<String, String> r = jedis.hgetAll("cart:" + token);
+        r.forEach((k, v) -> {
+            System.out.println(" " + k + ": " + v);
+        });
+        System.out.println();
+
+        assert  r.size() >= 1;
+
+        System.out.println("let's clean out our sessions and carts");
+        CleanFullSessionsThread thread = new CleanFullSessionsThread(jedis, 0);
+        thread.start();
+        Thread.sleep(1000);
+        thread.quit();
+        Thread.sleep(2000);
+        if (thread.isAlive()) {
+            throw new RuntimeException("the clean sessions thread is still alive?!");
+        }
+
+        r = jedis.hgetAll("cart:" + token);
+        System.out.println("our shopping cart now contains:");
+        r.forEach((k, v) -> {
+            System.out.println(" " + k + ": " + v);
+        });
+        assert r.size() == 0;
     }
 
     /**
@@ -90,13 +119,13 @@ public class LoginCookieCache {
     /**
      * 添加购物车
      */
-    public void addToCart(String session, String item, long count) {
+    public void addToCart(String token, String item, long count) {
         if (count <= 0) {
             // 移除指定的商品
-            jedis.hdel("cart:" + session, item);
+            jedis.hdel("cart:" + token, item);
         } else {
             // 购物车添加商品
-            jedis.hset("cart:" + session, item, String.valueOf(count));
+            jedis.hset("cart:" + token, item, String.valueOf(count));
         }
     }
 
@@ -146,6 +175,51 @@ public class LoginCookieCache {
                 jedis.del(sessionKeys.toArray(new String[sessionKeys.size()]));
                 jedis.hdel("login:", tokens);
                 jedis.zrem("recent:", tokens);
+            }
+        }
+    }
+
+    static class CleanFullSessionsThread extends Thread {
+        private Jedis jedis;
+        private int limit;
+        private boolean quit;
+
+        public CleanFullSessionsThread(Jedis jedis, int limit) {
+            this.jedis = jedis;
+            this.limit = limit;
+            this.quit = false;
+        }
+
+        public void quit() {
+            this.quit = true;
+        }
+
+        @Override
+        public void run() {
+            while (!quit) {
+                long size = jedis.zcard("recent:");
+                if (size <= limit) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    continue;
+                }
+
+                long endIndex = Math.min(size - limit, 100);
+                Set<String> sessionSet = jedis.zrange("recent:", 0, endIndex - 1);
+                String[] sessions = sessionSet.toArray(new String[sessionSet.size()]);
+
+                List<String> sessionKeys = new ArrayList<>();
+                for (String session : sessions) {
+                    sessionKeys.add("viewed:" + session);
+                    sessionKeys.add("cart:" + session);
+                }
+
+                jedis.del(sessionKeys.toArray(new String[sessionKeys.size()]));
+                jedis.hdel("login:", sessions);
+                jedis.zrem("recent:", sessions);
             }
         }
     }

@@ -5,7 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.ziyu</groupId>
     <artifactId>redis-in-action</artifactId>
+    <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
+    <modules>
+        <module>article-vote-website</module>
+        <module>article-vote-website</module>
+    </modules>
 
     <parent>
         <artifactId>spring-boot-starter-web</artifactId>

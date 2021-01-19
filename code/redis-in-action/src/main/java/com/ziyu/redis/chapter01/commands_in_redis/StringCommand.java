@@ -1,4 +1,4 @@
-package com.ziyu.redis.commands_in_redis;
+package com.ziyu.redis.chapter01.commands_in_redis;
 
 import com.ziyu.redis.util.RedisUtils;
 import redis.clients.jedis.Jedis;

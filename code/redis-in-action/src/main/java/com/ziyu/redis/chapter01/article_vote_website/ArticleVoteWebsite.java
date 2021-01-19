@@ -1,8 +1,6 @@
 package com.ziyu.redis.chapter01.article_vote_website;
 
 import com.google.common.collect.ImmutableMap;
-import com.sun.javaws.IconUtil;
-import org.junit.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.ZParams;
